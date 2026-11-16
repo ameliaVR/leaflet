@@ -18,8 +18,32 @@ app.disable('x-powered-by');
 const port = Number(process.env.PORT || 3001);
 const cookieName = 'leaflet_session';
 const isProduction = process.env.NODE_ENV === 'production';
+if (isProduction) app.set('trust proxy', 1);
 const serverDir = join(dirname(fileURLToPath(import.meta.url)), '..');
 const coversDir = join(serverDir, 'uploads', 'book-covers');
+const clientDistDir = join(serverDir, '..', 'client', 'dist');
+const appOrigin = process.env.APP_ORIGIN || process.env.RENDER_EXTERNAL_URL;
+const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+const cloudKey = process.env.CLOUDINARY_API_KEY;
+const cloudSecret = process.env.CLOUDINARY_API_SECRET;
+const hasCloudinary = Boolean(cloudName && cloudKey && cloudSecret);
+if (isProduction && (!hasCloudinary || !appOrigin)) {
+  throw new Error('Production requires Cloudinary credentials and APP_ORIGIN or RENDER_EXTERNAL_URL.');
+}
+
+async function cloudinaryRequest(action, fields) {
+  const auth = Buffer.from(`${cloudKey}:${cloudSecret}`).toString('base64');
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/image/${action}`,
+    { method: 'POST', headers: { Authorization: `Basic ${auth}` }, body: fields }
+  );
+  const result = await response.json();
+  if (!response.ok) {
+    console.error('Cloudinary request failed:', action, result.error?.message);
+    throw new Error('Не вдалося зберегти обкладинку в хмарному сховищі');
+  }
+  return result;
+}
 const bookIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const coverFilenamePattern = /^[0-9a-f-]{36}\.webp$/i;
 
@@ -29,6 +53,14 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '64kb' }));
 app.use(cookieParser());
+// Since production serves React and the API on the same origin, reject cross-site writes.
+app.use('/api', (req, res, next) => {
+  if (!isProduction || ['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return next();
+  if (req.get('Origin') !== appOrigin) {
+    return res.status(403).json({ error: 'Недозволене джерело запиту' });
+  }
+  next();
+});
 app.use('/uploads/book-covers', express.static(coversDir));
 
 const authLimit = rateLimit({
@@ -419,6 +451,10 @@ app.delete('/api/books/:id', requireAuth, async (req, res, next) => {
       if (coverFilenamePattern.test(filename)) {
         await unlink(join(coversDir, filename)).catch(() => {});
       }
+    } else if (hasCloudinary && oldUrl?.startsWith(`https://res.cloudinary.com/${cloudName}/`)) {
+      const fields = new FormData();
+      fields.append('public_id', `leaflet/books/${id}`);
+      await cloudinaryRequest('destroy', fields).catch(error => console.error(error));
     }
 
     res.json({ ok: true });
@@ -459,11 +495,29 @@ app.post('/api/books/:id/cover', requireAuth, coverLimit, coverUpload.single('co
       return res.status(400).json({ error: 'Не вдалося прочитати зображення' });
     }
 
-    await mkdir(coversDir, { recursive: true });
-    const filename = `${randomUUID()}.webp`;
-    const filePath = join(coversDir, filename);
-    const coverUrl = `/uploads/book-covers/${filename}`;
-    await writeFile(filePath, imageBuffer);
+    let coverUrl;
+    let localFilePath;
+
+    if (hasCloudinary) {
+      const fields = new FormData();
+      fields.append('file', new Blob([imageBuffer], { type: 'image/webp' }), `${id}.webp`);
+      fields.append('public_id', `leaflet/books/${id}`);
+      fields.append('overwrite', 'true');
+      fields.append('invalidate', 'true');
+      const uploaded = await cloudinaryRequest('upload', fields);
+      if (typeof uploaded.secure_url !== 'string' ||
+          !uploaded.secure_url.startsWith(`https://res.cloudinary.com/${cloudName}/`)) {
+        throw new Error('Cloudinary did not return a valid image URL');
+      }
+      coverUrl = uploaded.secure_url;
+    } else {
+      // Local-development fallback. Never used in production.
+      await mkdir(coversDir, { recursive: true });
+      const filename = `${randomUUID()}.webp`;
+      localFilePath = join(coversDir, filename);
+      coverUrl = `/uploads/book-covers/${filename}`;
+      await writeFile(localFilePath, imageBuffer);
+    }
 
     let updated;
     try {
@@ -472,19 +526,19 @@ app.post('/api/books/:id/cover', requireAuth, coverLimit, coverUpload.single('co
         [coverUrl, id, req.user.id]
       );
     } catch (error) {
-      await unlink(filePath).catch(() => {});
+      if (localFilePath) await unlink(localFilePath).catch(() => {});
       throw error;
     }
 
     if (!updated.rows.length) {
-      await unlink(filePath).catch(() => {});
+      if (localFilePath) await unlink(localFilePath).catch(() => {});
       return res.status(404).json({ error: 'Книгу не знайдено' });
     }
 
     const oldUrl = rows[0].cover_url;
     if (oldUrl?.startsWith('/uploads/book-covers/')) {
       const oldFilename = basename(oldUrl);
-      if (coverFilenamePattern.test(oldFilename) && oldFilename !== filename) {
+      if (coverFilenamePattern.test(oldFilename)) {
         await unlink(join(coversDir, oldFilename)).catch(() => {});
       }
     }
@@ -496,6 +550,19 @@ app.post('/api/books/:id/cover', requireAuth, coverLimit, coverUpload.single('co
 });
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
+
+// The production website and API share one domain (no cross-site session cookies).
+if (isProduction) {
+  app.use(express.static(clientDistDir, { index: false }));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/')) {
+      return res.status(404).json({ error: 'Ресурс не знайдено' });
+    }
+    res.sendFile(join(clientDistDir, 'index.html'), error => {
+      if (error) next(error);
+    });
+  });
+}
 
 app.use((err, _req, res, next) => {
   if (err instanceof multer.MulterError) {
