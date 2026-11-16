@@ -22,7 +22,7 @@ if (isProduction) app.set('trust proxy', 1);
 const serverDir = join(dirname(fileURLToPath(import.meta.url)), '..');
 const coversDir = join(serverDir, 'uploads', 'book-covers');
 const clientDistDir = join(serverDir, '..', 'client', 'dist');
-const appOrigin = process.env.APP_ORIGIN || process.env.RENDER_EXTERNAL_URL;
+const appOrigin = process.env.APP_ORIGIN || (process.env.RENDER_EXTERNAL_HOSTNAME ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME}` : undefined);
 const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
 const cloudKey = process.env.CLOUDINARY_API_KEY;
 const cloudSecret = process.env.CLOUDINARY_API_SECRET;
@@ -31,11 +31,22 @@ if (isProduction && (!hasCloudinary || !appOrigin)) {
   throw new Error('Production requires Cloudinary credentials and APP_ORIGIN or RENDER_EXTERNAL_URL.');
 }
 
-async function cloudinaryRequest(action, fields) {
-  const auth = Buffer.from(`${cloudKey}:${cloudSecret}`).toString('base64');
+async function cloudinaryRequest(action, params, fileBuffer) {
+  const timestamp = String(Math.floor(Date.now() / 1000));
+  const signedParams = { ...params, timestamp };
+  const stringToSign = Object.entries(signedParams)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => `${key}=${value}`)
+    .join('&');
+  const signature = createHash('sha1').update(stringToSign + cloudSecret).digest('hex');
+  const fields = new FormData();
+  for (const [key, value] of Object.entries(signedParams)) fields.append(key, String(value));
+  fields.append('api_key', cloudKey);
+  fields.append('signature', signature);
+  if (fileBuffer) fields.append('file', new Blob([fileBuffer], { type: 'image/webp' }), 'cover.webp');
   const response = await fetch(
     `https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/image/${action}`,
-    { method: 'POST', headers: { Authorization: `Basic ${auth}` }, body: fields }
+    { method: 'POST', body: fields }
   );
   const result = await response.json();
   if (!response.ok) {
@@ -44,13 +55,16 @@ async function cloudinaryRequest(action, fields) {
   }
   return result;
 }
+
 const bookIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const coverFilenamePattern = /^[0-9a-f-]{36}\.webp$/i;
 
-app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || 'http://127.0.0.1:5173',
-  credentials: true
-}));
+if (!isProduction) {
+  app.use(cors({
+    origin: process.env.CLIENT_ORIGIN || 'http://127.0.0.1:5173',
+    credentials: true
+  }));
+}
 app.use(express.json({ limit: '64kb' }));
 app.use(cookieParser());
 // Since production serves React and the API on the same origin, reject cross-site writes.
@@ -452,9 +466,8 @@ app.delete('/api/books/:id', requireAuth, async (req, res, next) => {
         await unlink(join(coversDir, filename)).catch(() => {});
       }
     } else if (hasCloudinary && oldUrl?.startsWith(`https://res.cloudinary.com/${cloudName}/`)) {
-      const fields = new FormData();
-      fields.append('public_id', `leaflet/books/${id}`);
-      await cloudinaryRequest('destroy', fields).catch(error => console.error(error));
+      await cloudinaryRequest('destroy', { public_id: `leaflet/books/${id}`, invalidate: 'true' })
+        .catch(error => console.error(error));
     }
 
     res.json({ ok: true });
@@ -499,12 +512,10 @@ app.post('/api/books/:id/cover', requireAuth, coverLimit, coverUpload.single('co
     let localFilePath;
 
     if (hasCloudinary) {
-      const fields = new FormData();
-      fields.append('file', new Blob([imageBuffer], { type: 'image/webp' }), `${id}.webp`);
-      fields.append('public_id', `leaflet/books/${id}`);
-      fields.append('overwrite', 'true');
-      fields.append('invalidate', 'true');
-      const uploaded = await cloudinaryRequest('upload', fields);
+      const uploaded = await cloudinaryRequest('upload',
+        { public_id: `leaflet/books/${id}`, overwrite: 'true', invalidate: 'true' },
+        imageBuffer
+      );
       if (typeof uploaded.secure_url !== 'string' ||
           !uploaded.secure_url.startsWith(`https://res.cloudinary.com/${cloudName}/`)) {
         throw new Error('Cloudinary did not return a valid image URL');
