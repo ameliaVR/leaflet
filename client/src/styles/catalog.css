@@ -1,0 +1,855 @@
+
+    :root {
+      --bg: #2f1e15;
+      --header: #170d08;
+      --card: #573d2e;
+      --card-border: #6e5040;
+      --accent: #c4906f;
+      --accent-dark: #8a6149;
+      --selected: #8f6548;
+      --text: #ffffff;
+      --text-soft: #d9c7ba;
+      --text-muted: #a8958a;
+      --nav-h: 72px;
+      --header-h: 64px;
+    }
+ 
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    html, body { min-height: 100%; }
+    html { overscroll-behavior-y: none; }
+ 
+    body {
+      font-family: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+ 
+    button { font-family: inherit; }
+ 
+    /* ---------- Шапка ---------- */
+    .header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--header-h);
+      background: var(--header);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 20;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+ 
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 17px;
+    }
+ 
+    .brand-logo {
+      width: 34px; height: 34px;
+      border-radius: 9px;
+      background: var(--accent);
+      display: grid;
+      place-items: center;
+      color: var(--header);
+    }
+ 
+    .avatar-sm {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--header);
+      font-size: 12px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+      text-decoration: none;
+    }
+ 
+    .top-nav { display: none; }
+ 
+    /* ---------- Макет ---------- */
+    main {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: calc(var(--header-h) + 36px) 20px calc(var(--nav-h) + 32px);
+    }
+ 
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 18px;
+    }
+ 
+    h1 {
+      font-size: 46px;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 18px;
+    }
+ 
+    .subtitle {
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-soft);
+      margin-bottom: 28px;
+    }
+ 
+    /* ---------- Пошук і фільтри ---------- */
+    .toolbar { display: grid; gap: 14px; margin-bottom: 18px; }
+ 
+    .search {
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 58px;
+      padding: 0 18px;
+      gap: 14px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+ 
+    .search:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(196, 144, 111, 0.2);
+    }
+ 
+    .search svg { flex: none; color: var(--text-soft); }
+ 
+    .search input {
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 15px;
+    }
+ 
+    .search input::placeholder { color: var(--text-soft); opacity: .8; }
+    .search input::-webkit-search-cancel-button { display: none; }
+ 
+    .search-clear {
+      flex: none;
+      width: 28px; height: 28px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-soft);
+      cursor: pointer;
+      display: none;
+      place-items: center;
+    }
+ 
+    .search-clear.visible { display: grid; }
+ 
+    .filters {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+ 
+    .dd-btn {
+      position: relative;
+      width: 100%;
+      text-align: left;
+      padding: 14px 40px 14px 16px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color .2s;
+    }
+ 
+    .dd-btn:hover, .dropdown.open .dd-btn { border-color: var(--accent); }
+ 
+    .dd-label {
+      display: block;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 5px;
+    }
+ 
+    .dd-value { display: block; font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+ 
+    .dd-chevron {
+      position: absolute;
+      right: 14px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-soft);
+      transition: transform .2s;
+    }
+ 
+    .dropdown.open .dd-chevron { transform: translateY(-50%) rotate(180deg); }
+ 
+    .dd-menu {
+      position: absolute;
+      left: 0; right: 0;
+      top: calc(100% + 8px);
+      z-index: 5;
+      padding: 8px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+    }
+ 
+    .dd-menu[hidden] { display: none; }
+ 
+    .dd-option {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 14px;
+      border: none;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+    }
+ 
+    .dd-option:hover { background: rgba(255, 255, 255, 0.07); }
+    .dd-option[aria-selected="true"] { background: var(--selected); }
+ 
+    .results-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 24px;
+      margin-bottom: 18px;
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+ 
+    .reset-btn {
+      border: none;
+      background: none;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+    }
+ 
+    .reset-btn.visible { display: inline; }
+ 
+    /* ---------- Картки книг ---------- */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 30px 16px;
+    }
+ 
+    .book { display: flex; flex-direction: column; min-width: 0; }
+ 
+    .cover-wrap {
+      position: relative;
+      padding: 16px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      margin-bottom: 18px;
+    }
+ 
+    .fav {
+      position: absolute;
+      top: 10px; right: 10px;
+      z-index: 2;
+      width: 36px; height: 36px;
+      border: none;
+      border-radius: 50%;
+      background: var(--header);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: transform .1s, color .2s;
+    }
+ 
+    .fav:active { transform: scale(0.9); }
+    .fav.active { color: var(--accent); }
+    .fav.active svg { fill: currentColor; }
+ 
+    .cover {
+      position: relative;
+      aspect-ratio: 2 / 3;
+      border-radius: 6px 12px 12px 6px;
+      overflow: hidden;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.4);
+    }
+ 
+    .cover::before { /* корінець */
+      content: "";
+      position: absolute;
+      top: 0; bottom: 0; left: 10px;
+      width: 1px;
+      background: currentColor;
+      opacity: .22;
+    }
+ 
+    .cover::after { /* декоративне коло */
+      content: "";
+      position: absolute;
+      right: -26px; bottom: 34px;
+      width: 74px; height: 74px;
+      border-radius: 50%;
+      border: 1px solid currentColor;
+      opacity: .2;
+    }
+ 
+    .cover--dark { background: #170d08; color: #ffffff; }
+    .cover--tan  { background: var(--accent); color: #170d08; }
+ 
+    .cover-icon { position: absolute; top: 16px; left: 22px; width: 12px; height: 12px; }
+    .cover-icon.dot { border-radius: 50%; background: currentColor; }
+    .cover-icon.spark { width: 20px; height: 20px; top: 14px; left: 20px; }
+ 
+    .cover-title {
+      position: relative;
+      z-index: 1;
+      font-size: 17px;
+      font-weight: 400;
+      line-height: 1.15;
+      margin: 0 0 6px 8px;
+      overflow-wrap: anywhere;
+    }
+ 
+    .cover-author {
+      position: relative;
+      z-index: 1;
+      font-size: 8px;
+      font-weight: 500;
+      opacity: .7;
+      margin-left: 8px;
+    }
+ 
+    .genre {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+ 
+    .book-title { font-size: 20px; font-weight: 400; margin-bottom: 8px; overflow-wrap: anywhere; }
+    .book-author { font-size: 13px; color: var(--text-soft); margin-bottom: 16px; }
+ 
+    .owner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      color: var(--text-soft);
+      margin-bottom: 14px;
+      min-width: 0;
+    }
+ 
+    .owner-avatar {
+      flex: none;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--header);
+      font-size: 10px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+    }
+ 
+    .owner-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+ 
+    .book-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 11px;
+    }
+ 
+    .cond { color: var(--text-soft); }
+ 
+    .chat-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-align: right;
+      font-weight: 700;
+      line-height: 1.25;
+      color: var(--accent);
+      text-decoration: none;
+    }
+ 
+    .chat-link svg { flex: none; }
+    .chat-link:hover { color: #e0b496; }
+ 
+    /* ---------- Порожній стан ---------- */
+    .empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 56px 24px;
+      background: var(--card);
+      border: 1px dashed var(--card-border);
+      border-radius: 24px;
+    }
+ 
+    .empty h2 { font-size: 22px; font-weight: 400; margin-bottom: 10px; }
+    .empty p { font-size: 13px; color: var(--text-soft); margin-bottom: 22px; }
+ 
+    .btn {
+      height: 46px;
+      padding: 0 28px;
+      border: none;
+      border-radius: 12px;
+      background: var(--header);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+ 
+    /* ---------- Завантаження, «Ваша книга», кнопка додавання ---------- */
+    .status {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 48px 0;
+      font-size: 14px;
+      color: var(--text-soft);
+    }
+ 
+    .grid { transition: opacity .2s; }
+    .grid.is-loading { opacity: .5; pointer-events: none; }
+ 
+    .mine-badge {
+      font-weight: 700;
+      font-size: 11px;
+      color: var(--header);
+      background: var(--accent);
+      padding: 6px 12px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+ 
+    .add-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      height: 48px;
+      padding: 0 22px;
+      margin: 0 0 28px;
+      border-radius: 14px;
+      background: var(--accent);
+      color: var(--header);
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background .2s, transform .1s;
+    }
+ 
+    .add-btn:hover { background: #d3a283; }
+    .add-btn:active { transform: scale(0.97); }
+ 
+    /* ---------- Нижнє меню ---------- */
+    .nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      background: var(--header);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: env(safe-area-inset-bottom);
+      z-index: 20;
+    }
+ 
+    .nav a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      color: var(--text-soft);
+      text-decoration: none;
+      flex: 1;
+    }
+ 
+    .nav a.active { color: var(--accent); }
+ 
+    /* ---------- Повідомлення ---------- */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(var(--nav-h) + 20px);
+      transform: translate(-50%, 20px);
+      background: var(--accent);
+      color: var(--header);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 12px 20px;
+      border-radius: 999px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s, transform .25s;
+      z-index: 30;
+      white-space: nowrap;
+    }
+ 
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+ 
+    /* ---------- Планшети та комп'ютери ---------- */
+    @media (min-width: 768px) {
+      :root { --header-h: 72px; }
+ 
+      .header { padding: 0 max(32px, calc((100vw - 1200px) / 2)); }
+      .brand { font-size: 19px; }
+      .brand-logo { width: 38px; height: 38px; }
+      .avatar-sm { width: 40px; height: 40px; font-size: 13px; }
+ 
+      .nav { display: none; }
+ 
+      .top-nav { display: flex; gap: 36px; margin-left: auto; margin-right: 32px; }
+      .top-nav a { font-size: 14px; color: var(--text-soft); text-decoration: none; transition: color .2s; }
+      .top-nav a:hover, .top-nav a.active { color: var(--accent); }
+ 
+      main { max-width: 1200px; padding: calc(var(--header-h) + 56px) 32px 72px; }
+ 
+      .eyebrow { font-size: 12px; }
+      h1 { font-size: 72px; max-width: 760px; margin-bottom: 20px; }
+      .subtitle { font-size: 16px; margin-bottom: 40px; }
+ 
+      .toolbar { grid-template-columns: 1fr auto; align-items: start; gap: 16px; }
+      .search { height: 62px; }
+      .filters { grid-template-columns: 210px 210px; }
+      .dropdown { position: relative; }
+      .dd-menu { min-width: 100%; }
+      .dd-btn { height: 62px; }
+ 
+      .results-bar { font-size: 14px; margin: 8px 0 24px; }
+      .reset-btn { font-size: 14px; }
+ 
+      .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 44px 28px; }
+      .cover-wrap { padding: 24px; }
+      .cover-title { font-size: 20px; }
+      .cover-author { font-size: 10px; }
+      .book-title { font-size: 22px; }
+      .book-author { font-size: 14px; }
+      .owner, .book-foot { font-size: 12px; }
+ 
+      .toast { bottom: 32px; }
+    }
+ 
+    @media (min-width: 1100px) {
+      .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+  
+
+/* LEAFLET — публічний каталог */
+
+.catalog-page {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+  color: #f1e6d8;
+}
+
+.catalog-page h1 {
+  font-family: Georgia, serif;
+  font-size: clamp(32px, 5vw, 54px);
+  margin: 12px 0;
+}
+
+.catalog-subtitle {
+  color: #c6ac96;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+
+.catalog-add {
+  display: inline-flex;
+  align-items: center;
+  padding: 13px 20px;
+  background: #c8a47c;
+  color: #261b16;
+  border-radius: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  margin-bottom: 34px;
+}
+
+.catalog-add:hover {
+  background: #dfbd97;
+}
+
+.catalog-toolbar {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 16px;
+  padding: 22px;
+  background: #34251f;
+  border: 1px solid #594236;
+  border-radius: 18px;
+}
+
+.catalog-field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+  color: #e1cab5;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.catalog-field input,
+.catalog-field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid #705342;
+  border-radius: 10px;
+  background: #291d18;
+  color: #f5e8da;
+  font: inherit;
+}
+
+.catalog-field input::placeholder {
+  color: #b99e8c;
+}
+
+.catalog-results {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin: 24px 0;
+  color: #c9af99;
+}
+
+.catalog-reset {
+  background: transparent;
+  border: 1px solid #705342;
+  border-radius: 10px;
+  color: #e8d0b9;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(260px, 1fr)
+  );
+  gap: 24px;
+  align-items: start;
+}
+
+.catalog-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #624838;
+  border-radius: 18px;
+  background: #34251f;
+}
+
+.catalog-cover {
+  height: 270px;
+  background: #4b352a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.catalog-cover img {
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  box-sizing: border-box;
+  object-fit: contain;
+}
+
+.catalog-cover span {
+  font-size: 55px;
+}
+
+.catalog-card-content {
+  padding: 20px;
+}
+
+.catalog-card-content h2 {
+  font-family: Georgia, serif;
+  font-size: 23px;
+  line-height: 1.3;
+  margin: 0 0 8px;
+  overflow-wrap: anywhere;
+}
+
+.catalog-author {
+  color: #c8a47c;
+  margin-bottom: 16px;
+}
+
+.catalog-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.catalog-tags span {
+  background: #624736;
+  color: #f3ddc9;
+  border-radius: 20px;
+  padding: 7px 11px;
+  font-size: 12px;
+}
+
+.catalog-description {
+  color: #e2cbb8;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.catalog-owner {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #604637;
+  color: #e2cbb8;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.catalog-owner p {
+  margin: 7px 0;
+}
+
+.catalog-contact {
+  color: #dfbd97;
+}
+
+.catalog-muted {
+  color: #b59c8a;
+}
+
+.catalog-empty {
+  padding: 55px 24px;
+  text-align: center;
+  background: #34251f;
+  border-radius: 18px;
+}
+
+.catalog-error {
+  padding: 16px;
+  background: #633c37;
+  color: #ffe0da;
+  border-radius: 12px;
+}
+
+@media (max-width: 850px) {
+  .catalog-toolbar {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .catalog-page {
+    padding: 28px 16px 70px;
+  }
+
+  .catalog-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .catalog-results {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* LEAFLET — повністю клікабельні картки */
+
+.catalog-page .catalog-card {
+  display: block;
+  color: #f1e6d8;
+  text-decoration: none;
+  cursor: pointer;
+
+  border: 1px solid #624838;
+  border-radius: 18px;
+  overflow: hidden;
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.catalog-page .catalog-card:hover {
+  transform: translateY(-5px);
+  border-color: #c8a47c;
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+.catalog-page .catalog-card:hover .catalog-cover img {
+  transform: scale(1.04);
+}
+
+.catalog-page .catalog-cover img {
+  transition: transform 0.3s ease;
+}
+
+.catalog-page .catalog-card:focus-visible {
+  outline: 3px solid #dfbd97;
+  outline-offset: 4px;
+}
+
+.catalog-page .catalog-card:visited {
+  color: #f1e6d8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .catalog-page .catalog-card,
+  .catalog-page .catalog-cover img {
+    transition: none;
+  }
+
+  .catalog-page .catalog-card:hover,
+  .catalog-page .catalog-card:hover .catalog-cover img {
+    transform: none;
+  }
+}

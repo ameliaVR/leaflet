@@ -1,0 +1,213 @@
+
+/* LEAFLET — сторінка окремої книги */
+
+.book-details-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 45px 24px 90px;
+  color: #f2e5d7;
+}
+
+.book-details-back {
+  display: inline-block;
+  margin-bottom: 34px;
+  color: #d5b28e;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.book-details-back:hover {
+  color: #fff0dd;
+}
+
+.book-details-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 400px) minmax(0, 1fr);
+  align-items: start;
+  gap: 55px;
+}
+
+.book-details-cover {
+  min-height: 470px;
+  aspect-ratio: 3 / 4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid #654a3a;
+  background: #483227;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
+}
+
+.book-details-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 18px;
+  box-sizing: border-box;
+}
+
+.book-details-cover span {
+  font-size: 90px;
+}
+
+.book-details-eyebrow {
+  margin: 0 0 12px;
+  color: #c7a17d;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.book-details-info h1 {
+  margin: 0 0 14px;
+  font-family: Georgia, serif;
+  font-size: clamp(32px, 4vw, 48px);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.book-details-author {
+  color: #d6ae8b;
+  font-size: 19px;
+  margin-bottom: 25px;
+}
+
+.book-details-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+
+.book-details-tags span {
+  padding: 10px 15px;
+  border-radius: 24px;
+  background: #604636;
+  color: #f6e4d1;
+  font-size: 13px;
+}
+
+.book-details-section {
+  margin-bottom: 30px;
+}
+
+.book-details-section h2,
+.book-details-owner h2 {
+  margin-bottom: 15px;
+  font-family: Georgia, serif;
+  font-size: 23px;
+}
+
+.book-details-section p {
+  color: #dac4b1;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.book-details-owner {
+  padding: 24px;
+  background: #34251f;
+  border: 1px solid #624838;
+  border-radius: 18px;
+}
+
+.book-details-owner-top {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.book-details-avatar {
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #795640;
+  color: #fff0dd;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.book-details-owner-top strong {
+  font-size: 17px;
+}
+
+.book-details-owner-top p {
+  margin: 6px 0 0;
+  color: #c3a58f;
+  font-size: 14px;
+}
+
+.book-details-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 22px;
+  padding: 17px;
+  background: #473126;
+  border: 1px solid #70513d;
+  border-radius: 12px;
+  overflow-wrap: anywhere;
+}
+
+.book-details-contact p {
+  margin: 0;
+  color: #cbb09b;
+  font-size: 13px;
+}
+
+.book-details-contact strong {
+  color: #f5d5ad;
+  font-size: 17px;
+}
+
+.book-details-contact small {
+  color: #cbb09b;
+  line-height: 1.6;
+}
+
+.book-details-muted,
+.book-details-date {
+  color: #bea18b;
+  font-size: 13px;
+}
+
+.book-details-date {
+  margin-top: 24px;
+}
+
+.book-details-message {
+  padding: 35px;
+  background: #34251f;
+  border-radius: 16px;
+}
+
+@media (max-width: 800px) {
+  .book-details-layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .book-details-cover {
+    width: 100%;
+    max-width: 400px;
+    min-height: 360px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 500px) {
+  .book-details-page {
+    padding: 26px 16px 80px;
+  }
+
+  .book-details-owner {
+    padding: 18px;
+  }
+}

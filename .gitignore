@@ -1,0 +1,26 @@
+
+# Dependencies
+**/node_modules/
+
+# Environment variables and passwords
+**/.env
+**/.env.*
+!**/.env.example
+
+# Build files
+**/dist/
+**/*.tsbuildinfo
+
+# Uploaded images
+server/uploads/
+
+# Editor settings
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Windows
+Thumbs.db
+.DS_Store

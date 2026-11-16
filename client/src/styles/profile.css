@@ -1,0 +1,458 @@
+
+    :root {
+      --bg: #2f1e15;
+      --header: #170d08;
+      --card: #573d2e;
+      --card-border: #6e5040;
+      --accent: #c4906f;
+      --accent-dark: #8a6149;
+      --text: #ffffff;
+      --text-soft: #d9c7ba;
+      --text-muted: #a8958a;
+      --btn: #170d08;
+      --nav-h: 72px;
+      --header-h: 64px;
+    }
+ 
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    html, body { min-height: 100%; }
+ 
+    html { overscroll-behavior-y: none; }
+ 
+ 
+    body {
+      font-family: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+ 
+    /* ---------- Header ---------- */
+    .header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--header-h);
+      background: var(--header);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 10;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+ 
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 24px -8px;
+      padding: 8px 14px 8px 10px;
+      border: none;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--accent);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+    }
+ 
+    .back-btn:hover { background: rgba(255, 255, 255, 0.08); }
+    .back-btn:active { transform: scale(0.96); }
+ 
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 17px;
+    }
+ 
+    .brand-logo {
+      width: 34px; height: 34px;
+      border-radius: 9px;
+      background: var(--accent);
+      display: grid;
+      place-items: center;
+      color: var(--header);
+    }
+ 
+    .avatar-sm {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--header);
+      font-size: 12px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+      text-decoration: none;
+    }
+ 
+    /* ---------- Layout ---------- */
+    main {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: calc(var(--header-h) + 36px) 20px calc(var(--nav-h) + 32px);
+    }
+ 
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 18px;
+    }
+ 
+    h1 {
+      font-size: 48px;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 14px;
+    }
+ 
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-soft);
+      margin-bottom: 28px;
+    }
+ 
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 28px 24px;
+      margin-bottom: 22px;
+    }
+ 
+    /* ---------- Profile card ---------- */
+    .profile-card {
+      text-align: center;
+      padding: 32px 24px 28px;
+    }
+ 
+    .avatar-wrap {
+      position: relative;
+      width: 90px;
+      margin: 0 auto 14px;
+    }
+ 
+    .avatar-edit {
+      position: absolute;
+      right: -2px; bottom: -2px;
+      width: 32px; height: 32px;
+      border: 3px solid var(--card);
+      border-radius: 50%;
+      background: var(--header);
+      color: var(--accent);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+    }
+ 
+    .avatar-edit:hover { background: #26150d; }
+    .avatar-edit:active { transform: scale(0.92); }
+ 
+    .photo-actions {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 6px;
+    }
+ 
+    .link-btn {
+      border: none;
+      background: none;
+      padding: 4px 2px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      cursor: pointer;
+    }
+ 
+    .link-btn:hover { text-decoration: underline; }
+    .link-btn:disabled { opacity: .6; cursor: wait; text-decoration: none; }
+    .link-btn.danger { color: #f0a08a; }
+    .link-btn[hidden] { display: none; }
+ 
+    .photo-error {
+      min-height: 0;
+      margin: 4px 0 8px;
+      font-size: 11px;
+      color: #f0a08a;
+    }
+ 
+    .photo-error:empty { display: none; }
+ 
+    .profile-card .avatar-wrap + .photo-actions { margin-bottom: 14px; }
+ 
+    /* фото замість літер в аватарках */
+    .has-photo {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: transparent;
+    }
+ 
+    .avatar-lg {
+      width: 90px; height: 90px;
+      margin: 0;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 5px solid var(--accent-dark);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.15);
+      color: var(--header);
+      font-size: 22px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+    }
+ 
+    .profile-name {
+      font-size: 24px;
+      font-weight: 400;
+      margin-bottom: 10px;
+      word-break: break-word;
+    }
+ 
+    .profile-email {
+      font-size: 11px;
+      color: var(--text-soft);
+      margin-bottom: 28px;
+      word-break: break-all;
+    }
+ 
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      color: var(--accent);
+    }
+ 
+    .status::before {
+      content: "";
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+ 
+    /* ---------- Form ---------- */
+    .field { margin-bottom: 20px; }
+ 
+    label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-soft);
+      margin-bottom: 9px;
+    }
+ 
+    input, textarea {
+      width: 100%;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background: transparent;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 0 16px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+ 
+    input { height: 48px; font-weight: 500; }
+ 
+    input:disabled {
+      color: var(--text-muted);
+      font-weight: 400;
+      cursor: not-allowed;
+    }
+ 
+    textarea {
+      min-height: 118px;
+      padding: 14px 16px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+ 
+    textarea::placeholder { color: var(--text-muted); }
+ 
+    input:focus:not(:disabled), textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(196, 144, 111, 0.2);
+    }
+ 
+    .btn {
+      width: 100%;
+      height: 50px;
+      margin-top: 8px;
+      border: none;
+      border-radius: 12px;
+      background: var(--btn);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .1s, background .2s;
+    }
+ 
+    .btn:hover { background: #26150d; }
+    .btn:active { transform: scale(0.98); }
+ 
+    /* ---------- Bottom nav ---------- */
+    .nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      background: var(--header);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: env(safe-area-inset-bottom);
+      z-index: 10;
+    }
+ 
+    .nav a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      color: var(--text-soft);
+      text-decoration: none;
+      flex: 1;
+    }
+ 
+    .nav a.active { color: var(--accent); }
+ 
+    /* ---------- Toast ---------- */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(var(--nav-h) + 20px);
+      transform: translate(-50%, 20px);
+      background: var(--accent);
+      color: var(--header);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 12px 20px;
+      border-radius: 999px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s, transform .25s;
+      z-index: 20;
+    }
+ 
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+ 
+    /* ---------- Навігація в шапці (тільки десктоп) ---------- */
+    .top-nav { display: none; }
+ 
+    /* ---------- Планшети та комп'ютери ---------- */
+    @media (min-width: 768px) {
+      :root { --header-h: 72px; }
+ 
+      .header {
+        padding: 0 max(32px, calc((100vw - 1100px) / 2));
+      }
+ 
+      .brand { font-size: 19px; }
+      .brand-logo { width: 38px; height: 38px; }
+      .avatar-sm { width: 40px; height: 40px; font-size: 13px; }
+ 
+      /* верхнє меню замість нижнього */
+      .nav { display: none; }
+ 
+      .top-nav {
+        display: flex;
+        gap: 36px;
+        margin-left: auto;
+        margin-right: 32px;
+      }
+ 
+      .top-nav a {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: var(--text-soft);
+        text-decoration: none;
+        transition: color .2s;
+      }
+ 
+      .top-nav a:hover { color: var(--accent); }
+ 
+      main {
+        max-width: 1100px;
+        padding: calc(var(--header-h) + 56px) 32px 64px;
+      }
+ 
+      .eyebrow { font-size: 12px; }
+      h1 { font-size: 72px; margin-bottom: 18px; }
+      .subtitle { font-size: 16px; margin-bottom: 44px; }
+ 
+      /* два стовпці: картка профілю зліва, форма справа */
+      .layout {
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        gap: 28px;
+        align-items: start;
+      }
+ 
+      .card { margin-bottom: 0; padding: 36px 36px; }
+ 
+      .profile-card {
+        position: sticky;
+        top: calc(var(--header-h) + 24px);
+        padding: 44px 28px 36px;
+      }
+ 
+      .avatar-wrap { width: 120px; }
+      .avatar-edit { width: 36px; height: 36px; right: 0; bottom: 0; }
+      .avatar-lg { width: 120px; height: 120px; font-size: 30px; border-width: 6px; }
+      .link-btn { font-size: 13px; }
+      .profile-name { font-size: 26px; }
+      .profile-email { font-size: 13px; }
+      .status { font-size: 12px; }
+ 
+      /* поля форми у дві колонки */
+      #profileForm {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 24px;
+      }
+ 
+      #profileForm .field-wide,
+      #profileForm .btn { grid-column: 1 / -1; }
+ 
+      label { font-size: 12px; }
+      input, textarea { font-size: 15px; }
+      input { height: 52px; }
+      textarea { min-height: 150px; }
+ 
+      .btn {
+        width: auto;
+        justify-self: end;
+        padding: 0 40px;
+        height: 52px;
+        font-size: 15px;
+      }
+ 
+      .toast { bottom: 32px; }
+    }
+ 
+    /* ---------- Великі екрани ---------- */
+    @media (min-width: 1200px) {
+      .layout { grid-template-columns: 380px 1fr; gap: 32px; }
+    }
+  
