@@ -18,7 +18,7 @@ type Book = {
   ownerContact: string | null;
 };
 
-const API = 'http://127.0.0.1:3001';
+const API = '';
 
 export default function BookDetails() {
   const { id } = useParams<{ id: string }>();
@@ -120,7 +120,7 @@ export default function BookDetails() {
         <div className="book-details-cover">
           {book.coverUrl ? (
             <img
-              src={`${API}${book.coverUrl}`}
+              src={book.coverUrl.startsWith('https://') ? book.coverUrl : `${API}${book.coverUrl}`}
               alt={`Обкладинка книги ${book.title}`}
             />
           ) : (
