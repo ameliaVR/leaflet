@@ -20,7 +20,7 @@ type Book = {
 
 type SortMode = 'new' | 'title';
 
-const API = 'http://127.0.0.1:3001';
+const API = '';
 
 export default function Catalog() {
   const [books, setBooks] = useState<Book[]>([]);
@@ -212,7 +212,7 @@ export default function Catalog() {
               <div className="catalog-cover">
                 {book.coverUrl ? (
                   <img
-                    src={`${API}${book.coverUrl}`}
+                    src={book.coverUrl.startsWith('https://') ? book.coverUrl : `${API}${book.coverUrl}`}
                     alt={`Обкладинка книги ${book.title}`}
                     loading="lazy"
                   />

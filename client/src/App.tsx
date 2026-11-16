@@ -1,5 +1,5 @@
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import { AuthProvider } from './context/AuthContext';
 import RequireAuth from './components/RequireAuth';
@@ -8,9 +8,7 @@ import Layout from './components/Layout';
 import Home from './pages/Home';
 import Catalog from './pages/Catalog';
 import BookDetails from './pages/BookDetails';
-import AddBook from './pages/AddBook';
 import Profile from './pages/Profile';
-import Library from './pages/Library';
 import AuthPage from './pages/Auth';
 import MyBooks from './pages/MyBooks';
 
@@ -52,7 +50,7 @@ export default function App() {
               path="add-book"
               element={
                 <RequireAuth>
-                  <AddBook />
+                  <Navigate to="/my-books" replace />
                 </RequireAuth>
               }
             />
@@ -70,7 +68,7 @@ export default function App() {
               path="library"
               element={
                 <RequireAuth>
-                  <Library />
+                  <Navigate to="/my-books" replace />
                 </RequireAuth>
               }
             />
