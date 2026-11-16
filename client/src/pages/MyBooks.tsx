@@ -13,7 +13,7 @@ type Book = {
   coverUrl: string | null;
 };
 
-const API = 'http://127.0.0.1:3001';
+const API = '';
 const MAX_COVER_BYTES = 5 * 1024 * 1024;
 const ALLOWED_COVER_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
@@ -313,7 +313,7 @@ export default function MyBooks() {
                 <div className="mybooks-cover">
                   {book.coverUrl ? (
                     <img className="mybooks-cover-image"
-                      src={`${API}${book.coverUrl}`} alt={`Обкладинка книги «${book.title}»`} />
+                      src={book.coverUrl.startsWith('https://') ? book.coverUrl : `${API}${book.coverUrl}`} alt={`Обкладинка книги «${book.title}»`} />
                   ) : (
                     <span aria-hidden="true">📖</span>
                   )}
